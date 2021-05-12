@@ -1,1 +1,1 @@
-[![Build status](https://travis-ci.org/DimaSahachko/ServletsProject.svg?branch=master)](https://travis-ci.org/DimaSahachko/ServletsProject)
+[![Build status](https://travis-ci.com/DimaSahachko/ServletsProject.svg?branch=master)](https://travis-ci.com/DimaSahachko/ServletsProject)
