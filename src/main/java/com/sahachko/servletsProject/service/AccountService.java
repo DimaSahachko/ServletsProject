@@ -5,7 +5,7 @@ import com.sahachko.servletsProject.model.Account;
 
 public interface AccountService {
 	
-	Account saveAcount(Account account);
+	Account saveAccount(Account account);
 	
 	Account updateAccount(Account account);
 
@@ -13,5 +13,5 @@ public interface AccountService {
 	
 	Account getAccountById(int id);
 	
-	boolean deleteAccountById(int id);
+	void deleteAccountById(int id);
 }

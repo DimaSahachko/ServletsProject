@@ -6,7 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 
 	@Id
@@ -20,7 +20,7 @@ public class User {
 	@JoinColumn(nullable = false, unique = true)
 	private Account account;
 
-	@OneToMany(cascade = CascadeType.REMOVE)
+	@OneToMany
 	@JoinColumn(name = "user_id")
 	private List<UserFile> files;
 

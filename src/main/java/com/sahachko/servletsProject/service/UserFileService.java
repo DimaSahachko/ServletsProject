@@ -6,7 +6,7 @@ import com.sahachko.servletsProject.model.UserFile;
 
 public interface UserFileService {
 	
-	UserFile saveUserFile(UserFile file);
+	UserFile saveUserFile(UserFile file, byte[] bytes, String fileName);
 	
 	UserFile updateUserFile(UserFile file);
 
@@ -14,5 +14,5 @@ public interface UserFileService {
 	
 	UserFile getUserFileById(int id);
 	
-	boolean deleteUserFileById(int id);
+	void deleteUserFileById(int id);
 }

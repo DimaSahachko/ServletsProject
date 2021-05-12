@@ -13,5 +13,5 @@ public interface EventService {
 	
 	Event getEventById(int id);
 	
-	boolean deleteEventById(int id);
+	void deleteEventById(int id);
 }

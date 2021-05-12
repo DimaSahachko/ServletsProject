@@ -8,6 +8,7 @@ import javax.persistence.OptimisticLockException;
 
 import org.hibernate.Session;
 
+import com.sahachko.servletsProject.exceptions.ResourceNotFoundException;
 import com.sahachko.servletsProject.model.Event;
 import com.sahachko.servletsProject.repository.EventRepository;
 
@@ -32,6 +33,9 @@ public class HibernateEventRepository implements EventRepository {
 			event = session.get(Event.class, id);
 			session.getTransaction().commit();
 		}
+		if(event == null) {
+			throw new ResourceNotFoundException("There is no event with such id");
+		}
 		return event;
 	}
 
@@ -53,23 +57,18 @@ public class HibernateEventRepository implements EventRepository {
 			session.update(event);
 			session.getTransaction().commit();
 		} catch(OptimisticLockException exc) {
-			event = null;
+			throw new ResourceNotFoundException("There is no event with such id");
 		}
 		return event;
 	}
 
 	@Override
-	public boolean deleteById(Integer id) {
+	public void deleteById(Integer id) {
+		Event event = getById(id);
 		try(Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
 			session.beginTransaction();
-			Event event = session.get(Event.class, id);
-			if(event == null) {
-				session.getTransaction().commit();
-				return false;
-			}
 			session.delete(event);
 			session.getTransaction().commit();
 		}
-		return true;
 	}
 }

@@ -8,15 +8,16 @@ import javax.persistence.OptimisticLockException;
 
 import org.hibernate.Session;
 
+import com.sahachko.servletsProject.exceptions.ResourceNotFoundException;
 import com.sahachko.servletsProject.model.Account;
 import com.sahachko.servletsProject.repository.AccountRepository;
 
-public class HibernateAccountRepository implements AccountRepository{
+public class HibernateAccountRepository implements AccountRepository {
 
 	@Override
 	public List<Account> getAll() {
 		List<Account> allAccounts = new ArrayList<>();
-		try(Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
+		try (Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			allAccounts = session.createQuery("from Account", Account.class).getResultList();
 			session.getTransaction().commit();
@@ -32,12 +33,15 @@ public class HibernateAccountRepository implements AccountRepository{
 			account = session.get(Account.class, id);
 			session.getTransaction().commit();
 		}
+		if (account == null) {
+			throw new ResourceNotFoundException("There is no account with such id");
+		}
 		return account;
 	}
 
 	@Override
 	public Account save(Account account) {
-		try(Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
+		try (Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			account.setSignUpDate(new Date());
 			session.save(account);
@@ -48,29 +52,24 @@ public class HibernateAccountRepository implements AccountRepository{
 
 	@Override
 	public Account update(Account account) {
-		try(Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
+		try (Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			session.update(account);
 			session.getTransaction().commit();
-		} catch(OptimisticLockException exc) {
-			account = null;
+		} catch (OptimisticLockException exc) {
+			throw new ResourceNotFoundException("There is no account with such id");
 		}
 		return account;
 	}
 
 	@Override
-	public boolean deleteById(Integer id) {
-		try(Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
+	public void deleteById(Integer id) {
+		Account account = getById(id);
+		try (Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
 			session.beginTransaction();
-			Account account = session.get(Account.class, id);
-			if(account == null) {
-				session.getTransaction().commit();
-				return false;
-			}
 			session.delete(account);
 			session.getTransaction().commit();
 		}
-		return true;
 	}
-	
+
 }

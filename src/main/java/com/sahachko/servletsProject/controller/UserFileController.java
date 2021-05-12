@@ -1,12 +1,10 @@
 package com.sahachko.servletsProject.controller;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,17 +19,14 @@ import com.sahachko.servletsProject.repository.hibernate.*;
 import com.sahachko.servletsProject.service.*;
 import com.sahachko.servletsProject.service.implementations.*;
 
+@SuppressWarnings("serial")
 public class UserFileController extends HttpServlet {
 	Gson json;
 	UserFileService userFileService;
-	UserService userService;
-	EventService eventService;
 	
 	public UserFileController() {
 		this.json = new GsonBuilder().setDateFormat("yyyy-MM-dd 'at' HH:mm:ss").create();
-		this.userFileService = new UserFileServiceImplementation(new HibernateUserFileRepository(), new HibernateUserRepository(), new HibernateEventRepository());
-		this.userService = new UserServiceImplementation(new HibernateUserRepository());
-		this.eventService = new EventServiceImplementation(new HibernateEventRepository());
+		this.userFileService = new UserFileServiceImplementation(new HibernateUserFileRepository(), new HibernateUserRepository(), new HibernateEventRepository(), new FilesIOServiceImplementation());
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -50,27 +45,18 @@ public class UserFileController extends HttpServlet {
 			throw new IncorrectHeaderException("Required \"Filename\" or \"Id\" header wasn't sent along with request");
 		}
 		int userId = Integer.parseInt(userIdHeader);
-		UUID uuid = UUID.randomUUID();
-		String storedName = uuid + "__" + fileName;
-		UserFile file = new UserFile(storedName, userId, FileStatus.ACTIVE);
-		file = userFileService.saveUserFile(file);
-	
-		String root = getInitParameter("root");
-		File userDirectory = new File(root + userId);
-		if(!userDirectory.exists()) {
-			userDirectory.mkdir();
+		UserFile file = new UserFile();
+		file.setUserId(userId);
+		int contentLength = request.getContentLength();
+		byte[] bytes = new byte[contentLength];
+		int currentPosition = 0;
+		int bytesRead = 0;
+		InputStream is = request.getInputStream();
+		while ((bytesRead = is.read()) != -1) {
+			bytes[currentPosition] = (byte) bytesRead;
+			currentPosition++;
 		}
-		File newFile = new File(userDirectory + "\\" + storedName);
-		InputStream inputStream = request.getInputStream();
-		FileOutputStream fos = new FileOutputStream(newFile);
-		byte[] buffer = new byte[4096];
-		int bytesRead = -1;
-		while((bytesRead = inputStream.read(buffer)) != -1) {
-			fos.write(buffer, 0, bytesRead);
-		}
-		fos.close();
-		inputStream.close();
-		
+		file = userFileService.saveUserFile(file, bytes, fileName);
 		response.setStatus(201);
 		response.setContentType("application/json");
 		response.getWriter().print(json.toJson(file));
@@ -96,14 +82,7 @@ public class UserFileController extends HttpServlet {
 
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int fileId = Integer.parseInt(request.getHeader("Id"));
-		UserFile file = userFileService.getUserFileById(fileId);
 		userFileService.deleteUserFileById(fileId);
-		
-		String root = getInitParameter("root");
-		File fileOnDisk = new File(root + file.getUserId() + "\\" + file.getName());
-		if(fileOnDisk.exists()) {
-			fileOnDisk.delete();
-		}
 		response.setStatus(204);
 		
 	}

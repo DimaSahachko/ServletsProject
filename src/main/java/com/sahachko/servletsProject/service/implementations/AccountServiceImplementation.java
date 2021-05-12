@@ -14,7 +14,7 @@ public class AccountServiceImplementation implements AccountService {
 	}
 	
 	@Override
-	public Account saveAcount(Account account) {
+	public Account saveAccount(Account account) {
 		return repository.save(account);
 	}
 
@@ -34,8 +34,8 @@ public class AccountServiceImplementation implements AccountService {
 	}
 
 	@Override
-	public boolean deleteAccountById(int id) {
-		return repository.deleteById(id);
+	public void deleteAccountById(int id) {
+		repository.deleteById(id);
 	}
 	
 }

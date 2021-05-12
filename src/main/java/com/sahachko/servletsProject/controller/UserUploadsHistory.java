@@ -13,16 +13,21 @@ import com.google.gson.GsonBuilder;
 import com.sahachko.servletsProject.exceptions.ResourceNotFoundException;
 import com.sahachko.servletsProject.model.User;
 import com.sahachko.servletsProject.model.UserFile;
+import com.sahachko.servletsProject.repository.hibernate.HibernateEventRepository;
+import com.sahachko.servletsProject.repository.hibernate.HibernateUserFileRepository;
 import com.sahachko.servletsProject.repository.hibernate.HibernateUserRepository;
 import com.sahachko.servletsProject.service.UserService;
+import com.sahachko.servletsProject.service.implementations.FilesIOServiceImplementation;
+import com.sahachko.servletsProject.service.implementations.UserFileServiceImplementation;
 import com.sahachko.servletsProject.service.implementations.UserServiceImplementation;
 
+@SuppressWarnings("serial")
 public class UserUploadsHistory extends HttpServlet {
 	private UserService service;
 	private Gson json;
 	
 	public UserUploadsHistory() {
-		this.service = new UserServiceImplementation(new HibernateUserRepository());
+		this.service = new UserServiceImplementation(new HibernateUserRepository(), new UserFileServiceImplementation(new HibernateUserFileRepository(),  new HibernateUserRepository(), new HibernateEventRepository(), new FilesIOServiceImplementation()));
 		this.json = new GsonBuilder().setDateFormat("yyyy-MM-dd 'at' HH:mm:ss").create();
 	}
 

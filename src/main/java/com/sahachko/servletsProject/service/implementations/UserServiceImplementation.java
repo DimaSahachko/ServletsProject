@@ -4,19 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.sahachko.servletsProject.exceptions.ResourceNotFoundException;
 import com.sahachko.servletsProject.model.FileStatus;
 import com.sahachko.servletsProject.model.User;
 import com.sahachko.servletsProject.model.UserFile;
 import com.sahachko.servletsProject.repository.UserRepository;
+import com.sahachko.servletsProject.service.UserFileService;
 import com.sahachko.servletsProject.service.UserService;
 
 public class UserServiceImplementation implements UserService {
 	
 	UserRepository repository;
+	UserFileService userFileService;
 
-	public UserServiceImplementation(UserRepository repository) {
+	public UserServiceImplementation(UserRepository repository, UserFileService userFileService) {
 		this.repository = repository;
+		this.userFileService = userFileService;
 	}
 
 	@Override
@@ -33,8 +35,10 @@ public class UserServiceImplementation implements UserService {
 	public List<User> getAllUsers() {
 		List<User> users =  repository.getAll();
 		for (User user : users) {
-			List<UserFile> files = user.getFiles().stream().filter(file -> file.getStatus().equals(FileStatus.ACTIVE)).collect(Collectors.toCollection(ArrayList::new));
-			user.setFiles(files);
+			if(user.getFiles() != null) {
+				List<UserFile> files = user.getFiles().stream().filter(file -> file.getStatus().equals(FileStatus.ACTIVE)).collect(Collectors.toCollection(ArrayList::new));
+				user.setFiles(files);
+			}
 		}
 		return users;
 	}
@@ -42,17 +46,21 @@ public class UserServiceImplementation implements UserService {
 	@Override
 	public User getUserById(int id) {
 		User user = repository.getById(id);
-		if(user == null) {
-			throw new ResourceNotFoundException("There is no user with such id");
+		if(user.getFiles() != null) {
+			List<UserFile> files = user.getFiles().stream().filter(file -> file.getStatus().equals(FileStatus.ACTIVE)).collect(Collectors.toCollection(ArrayList::new));
+			user.setFiles(files);
 		}
-		List<UserFile> files = user.getFiles().stream().filter(file -> file.getStatus().equals(FileStatus.ACTIVE)).collect(Collectors.toCollection(ArrayList::new));
-		user.setFiles(files);
 		return user;
 	}
 
 	@Override
-	public boolean deleteUserById(int id) {
-		return repository.deleteById(id);
+	public void deleteUserById(int id) {
+		User user = getUserById(id);
+		if(user.getFiles() != null) {
+			user.getFiles().stream().forEach(userFile -> userFileService.deleteUserFileById(userFile.getId()));
+		}
+		repository.deleteById(id);
+		
 	}
 	
 }

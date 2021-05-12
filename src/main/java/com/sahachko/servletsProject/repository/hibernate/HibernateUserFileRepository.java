@@ -8,6 +8,7 @@ import javax.persistence.OptimisticLockException;
 
 import org.hibernate.Session;
 
+import com.sahachko.servletsProject.exceptions.ResourceNotFoundException;
 import com.sahachko.servletsProject.model.UserFile;
 import com.sahachko.servletsProject.repository.UserFileRepository;
 
@@ -32,6 +33,9 @@ public class HibernateUserFileRepository implements UserFileRepository {
 			file = session.get(UserFile.class, id);
 			session.getTransaction().commit();
 		}
+		if(file == null) {
+			throw new ResourceNotFoundException("There is no file with such id");
+		}
 		return file;
 	}
 
@@ -54,24 +58,19 @@ public class HibernateUserFileRepository implements UserFileRepository {
 			session.update(file);
 			session.getTransaction().commit();
 		} catch(OptimisticLockException exc) {
-			file = null;
+			throw new ResourceNotFoundException("There is no file with such id");
 		}
 		return file;
 	}
 
 	@Override
-	public boolean deleteById(Integer id) {
+	public void deleteById(Integer id) {
+		UserFile file = getById(id);
 		try(Session session = HibernateConnectionUtils.getSessionFactory().openSession()) {
 			session.beginTransaction();
-			UserFile file = session.get(UserFile.class, id);
-			if(file == null) {
-				session.getTransaction().commit();
-				return false;
-			}
 			session.delete(file);
 			session.getTransaction().commit();
 		}
-		return true;
 	}
 		
 }

@@ -12,18 +12,30 @@
   </properties>
   
   <dependencies>
+  <dependency>
+    	<groupId>javax.servlet</groupId>
+   	 	<artifactId>javax.servlet-api</artifactId>
+   		<version>4.0.1</version>
+    	<scope>provided</scope>
+	</dependency>
     <dependency>
     	<groupId>org.junit.jupiter</groupId>
     	<artifactId>junit-jupiter-api</artifactId>
-    	<version>5.7.0</version>
+    	<version>5.7.1</version>
     	<scope>test</scope>
 	</dependency>
     <dependency>
      	<groupId>org.junit.jupiter</groupId>
      	<artifactId>junit-jupiter-engine</artifactId>
-     	<version>5.7.0</version>
+     	<version>5.7.1</version>
      	<scope>test</scope>
     </dependency>
+    <dependency>
+   		 <groupId>org.junit.platform</groupId>
+    	 <artifactId>junit-platform-launcher</artifactId>
+  		 <version>1.7.0</version>
+   		 <scope>test</scope>
+	</dependency>
     <dependency>
     	<groupId>org.mockito</groupId>
     	<artifactId>mockito-core</artifactId>
@@ -68,6 +80,19 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>3.0.0-M5</version>
         </plugin>
+        <plugin>
+    		<groupId>org.flywaydb</groupId>
+   		    <artifactId>flyway-maven-plugin</artifactId>
+   			<version>7.7.0</version>
+   			<configuration>
+                <url>jdbc:mysql://localhost:3306/servlets</url>
+                <user>root</user>
+                <password>password</password>
+                <locations>
+                    <location>filesystem:src/main/resources/flyway</location>
+                </locations>
+            </configuration>
+		</plugin>
     </plugins>
   </build>
 </project>

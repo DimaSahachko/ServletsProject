@@ -11,15 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sahachko.servletsProject.exceptions.ResourceNotFoundException;
 import com.sahachko.servletsProject.exceptions.NullFieldException;
-import com.sahachko.servletsProject.model.Account;
 import com.sahachko.servletsProject.model.Event;
 import com.sahachko.servletsProject.repository.hibernate.HibernateEventRepository;
 import com.sahachko.servletsProject.service.EventService;
 import com.sahachko.servletsProject.service.implementations.EventServiceImplementation;
 
-
+@SuppressWarnings("serial")
 public class EventController extends HttpServlet {
 	private EventService service;
 	private Gson json;
@@ -70,10 +68,7 @@ public class EventController extends HttpServlet {
 			throw new NullFieldException("Field in an event object which must be assigned has null value");
 		}
 		event = service.updateEvent(event);
-		if (event == null) {
-			throw new ResourceNotFoundException("There is no event with such id");
-		}
-		response.setStatus(201);
+		response.setStatus(200);
 		response.setContentType("application/json");
 		response.getWriter().print(json.toJson(event));
 		
@@ -81,11 +76,8 @@ public class EventController extends HttpServlet {
 
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventId = Integer.parseInt(request.getHeader("Id"));
-		if(service.deleteEventById(eventId)) {
-			response.setStatus(204);
-		} else {
-			throw new ResourceNotFoundException("There is no event with such id");
-		}
+		service.deleteEventById(eventId);
+		response.setStatus(204);
 	}
 	
 	private void getAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -99,9 +91,6 @@ public class EventController extends HttpServlet {
 	private void getById(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventId = Integer.parseInt(request.getHeader("Id"));
 		Event event = service.getEventById(eventId);
-		if(event == null) {
-			throw new ResourceNotFoundException("There is no event with such id");
-		}
 		response.setStatus(200);
 		response.setContentType("application/json");
 		response.getWriter().print(json.toJson(event));

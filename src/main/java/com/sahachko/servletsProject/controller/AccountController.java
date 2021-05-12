@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sahachko.servletsProject.exceptions.ResourceNotFoundException;
 import com.sahachko.servletsProject.exceptions.NullFieldException;
 import com.sahachko.servletsProject.model.Account;
 import com.sahachko.servletsProject.repository.hibernate.HibernateAccountRepository;
 import com.sahachko.servletsProject.service.AccountService;
 import com.sahachko.servletsProject.service.implementations.AccountServiceImplementation;
 
+@SuppressWarnings("serial")
 public class AccountController extends HttpServlet {
 	private AccountService service;
 	private Gson json;
@@ -41,16 +41,16 @@ public class AccountController extends HttpServlet {
 		StringBuilder requestBody = new StringBuilder();
 		BufferedReader reader = request.getReader();
 		String line; 
-		while ((line = reader.readLine()) != null) { //reading request body
+		while ((line = reader.readLine()) != null) {
 			requestBody.append(line);
 			requestBody.append(System.lineSeparator());
 		}
-		Account account = json.fromJson(requestBody.toString(), Account.class); //converting from json format to object
+		Account account = json.fromJson(requestBody.toString(), Account.class);
 		if (account.getFirstName() == null || account.getAccountStatus() == null || account.getBirthDate() == null
-			|| account.getLastName() == null) { //if some of not nullable field is set to null
+			|| account.getLastName() == null) {
 			throw new NullFieldException("Field in an account object which must be assigned has null value");
 		}
-		account = service.saveAcount(account); //if gotten object is in valid state than put it to the DB and send json response
+		account = service.saveAccount(account);
 		String accountInJsonFormat = json.toJson(account);
 		response.setStatus(201);
 		response.setContentType("application/json");
@@ -61,19 +61,16 @@ public class AccountController extends HttpServlet {
 		StringBuilder requestBody = new StringBuilder();
 		BufferedReader reader = request.getReader();
 		String line; 
-		while ((line = reader.readLine()) != null) { //reading request's body
+		while ((line = reader.readLine()) != null) {
 			requestBody.append(line);
 			requestBody.append(System.lineSeparator());
 		}
 		Account account = json.fromJson(requestBody.toString(), Account.class);
-		if (account.getId() == null || account.getFirstName() == null || account.getAccountStatus() == null //if some of not nullable field is set to null
+		if (account.getId() == null || account.getFirstName() == null || account.getAccountStatus() == null
 			|| account.getBirthDate() == null || account.getLastName() == null || account.getSignUpDate() == null) {  
 			throw new NullFieldException("Field in an account object which must be assigned has null value");
 		}
 		account = service.updateAccount(account);
-		if(account == null) {
-			throw new ResourceNotFoundException("There is no account with such id");
-		}
 		response.setStatus(200);
 		response.setContentType("application/json");
 		response.getWriter().print(json.toJson(account));
@@ -81,11 +78,8 @@ public class AccountController extends HttpServlet {
 
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int accountId = Integer.parseInt(request.getHeader("Id"));
-		if(service.deleteAccountById(accountId)) {
-			response.setStatus(204);
-		} else {
-			throw new ResourceNotFoundException("There is no account with such id");
-		}
+		service.deleteAccountById(accountId);
+		response.setStatus(204);
 	}
 	
 	private void getAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -99,9 +93,6 @@ public class AccountController extends HttpServlet {
 	private void getById(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int accountId = Integer.parseInt(request.getHeader("Id"));
 		Account account = service.getAccountById(accountId);
-		if(account == null) {
-			throw new ResourceNotFoundException("There is no account with such id");
-		}
 		response.setStatus(200);
 		response.setContentType("application/json");
 		response.getWriter().print(json.toJson(account));

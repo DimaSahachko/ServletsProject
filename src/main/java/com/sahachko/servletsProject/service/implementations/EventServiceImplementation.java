@@ -35,8 +35,8 @@ public class EventServiceImplementation implements EventService {
 	}
 
 	@Override
-	public boolean deleteEventById(int id) {
-		return repository.deleteById(id);
+	public void deleteEventById(int id) {
+		repository.deleteById(id);
 	}
 	
 }

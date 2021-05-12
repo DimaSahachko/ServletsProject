@@ -7,7 +7,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "Accounts")
+@Table(name = "accounts")
 public class Account {
 	
 	@Id
@@ -29,6 +29,7 @@ public class Account {
 	private Date signUpDate;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private AccountStatus accountStatus;
 	
 	public Account() {
