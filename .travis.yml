@@ -1,3 +1,8 @@
 language: java
 script:
  - mvn clean install
+deploy:
+ provider: heroku
+ api-key:
+  secure: cecae5e6-3204-4a92-a888-6ef783a34ff6
+ app: servlets-project
