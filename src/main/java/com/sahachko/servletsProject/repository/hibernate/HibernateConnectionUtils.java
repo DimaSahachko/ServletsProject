@@ -35,11 +35,19 @@ public class HibernateConnectionUtils {
 	}
 	
 	private static Map<String, String> getEnvUrl() {
-		Map<String, String> jdbcUrlSettings = new HashMap<>();
-		String jdbcDbUrl = System.getenv("JDBC_DATABASE_URL");
-		if(null != jdbcDbUrl) {
-			jdbcUrlSettings.put("hibernate.connection.url", jdbcDbUrl);
+		Map<String, String> connectionSettings = new HashMap<>();
+		String url = System.getenv("JDBC_DATABASE_URL");
+		String username = System.getenv("JDBC_DATABASE_USERNAME");
+		String password = System.getenv("JDBC_DATABASE_PASSWORD");
+		if(null != url) {
+			connectionSettings.put("hibernate.connection.url", url);
 		}
-		return jdbcUrlSettings;
+		if(null != username) {
+			connectionSettings.put("hibernate.connection.username", username);
+		}
+		if(null != password) {
+			connectionSettings.put("hibernate.connection.password", password);
+		}
+		return connectionSettings;
 	}
 }
