@@ -99,7 +99,7 @@
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>UserUploadsHistory</servlet-name>
-  	<url-pattern>/uploads_history</url-pattern>
+  	<url-pattern>/uploads-history</url-pattern>
   </servlet-mapping>
   
   
