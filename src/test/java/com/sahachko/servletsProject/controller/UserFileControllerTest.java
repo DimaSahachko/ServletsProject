@@ -65,7 +65,7 @@ class UserFileControllerTest {
 	
 	@Test
 	public void testDoGet_shouldCallServiceGetAll_whenAllFilesRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/files");
+		when(request.getServletPath()).thenReturn("/files");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
 		verify(service).getAllUsersFiles();
@@ -73,7 +73,7 @@ class UserFileControllerTest {
 	
 	@Test
 	public void testDoGet_shouldSetCorrectStatusAndHeaderToHttpResponse_whenAllFilesRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/files");
+		when(request.getServletPath()).thenReturn("/files");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
 		verify(response).setStatus(200);
@@ -85,7 +85,7 @@ class UserFileControllerTest {
 		List<UserFile> files = new ArrayList<>();
 		UserFile file = new UserFile("testFile.pdf", 101, FileStatus.ACTIVE);
 		files.add(file);
-		when(request.getRequestURI()).thenReturn("/servletsProject/files");
+		when(request.getServletPath()).thenReturn("/files");
 		when(service.getAllUsersFiles()).thenReturn(files);
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -94,7 +94,7 @@ class UserFileControllerTest {
 	
 	@Test
 	public void testDoGet_shouldCallServiceGetByIdMethod_whenFileByIdRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/files/file");
+		when(request.getServletPath()).thenReturn("/files/file");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -103,7 +103,7 @@ class UserFileControllerTest {
 	
 	@Test
 	public void testDoGet_shouldSetCorrectStatusAndHeaderToHttpResponse_whenFileByIdRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/files/file");
+		when(request.getServletPath()).thenReturn("/files/file");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -115,7 +115,7 @@ class UserFileControllerTest {
 	public void testDoGet_shouldWriteJsonRepsresentationOfRequestedFileToHttpResponseBody_whenAccountByIdRequested() throws IOException, ServletException {
 		UserFile file = new UserFile("testFile.pdf", 101, FileStatus.ACTIVE);
 		file.setId(1);
-		when(request.getRequestURI()).thenReturn("/servletsProject/files/file");
+		when(request.getServletPath()).thenReturn("/files/file");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(service.getUserFileById(1)).thenReturn(file);
 		when(response.getWriter()).thenReturn(printWriter);
@@ -125,14 +125,14 @@ class UserFileControllerTest {
 	
 	@Test
 	public void testDoGet_shouldThrowException_whenIdHeaderHasNotBeenSent() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/files/file");
+		when(request.getServletPath()).thenReturn("/files/file");
 		when(request.getHeader("Id")).thenReturn(null);
 		assertThrows(IllegalArgumentException.class, () -> controller.doGet(request, response));
 	}
 	
 	@Test
 	public void testDoGet_shouldThrowException_whenIdHeaderIsNotWholeNumber() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/files/file");
+		when(request.getServletPath()).thenReturn("/files/file");
 		when(request.getHeader("Id")).thenReturn("1.2");
 		assertThrows(IllegalArgumentException.class, () -> controller.doGet(request, response));
 	}

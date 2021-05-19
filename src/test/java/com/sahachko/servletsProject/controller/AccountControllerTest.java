@@ -58,7 +58,7 @@ class AccountControllerTest {
 	
 	@Test
 	public void testDoGet_shouldCallServiceGetAll_whenAllAccountsRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/accounts");
+		when(request.getServletPath()).thenReturn("/accounts");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
 		verify(service).getAllAccounts();
@@ -66,7 +66,7 @@ class AccountControllerTest {
 	
 	@Test
 	public void testDoGet_shouldSetCorrectStatusAndHeaderToHttpResponse_whenAllAccountsRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/accounts");
+		when(request.getServletPath()).thenReturn("/accounts");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
 		verify(response).setStatus(200);
@@ -79,7 +79,7 @@ class AccountControllerTest {
 		Account acc1 = new Account("first", "last", new GregorianCalendar(1994, Calendar.JANUARY, 22).getTime(), AccountStatus.REGULAR);
 		accounts.add(acc1);
 		acc1.setAccountStatus(AccountStatus.REGULAR);
-		when(request.getRequestURI()).thenReturn("/servletsProject/accounts");
+		when(request.getServletPath()).thenReturn("/accounts");
 		when(service.getAllAccounts()).thenReturn(accounts);
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -88,7 +88,7 @@ class AccountControllerTest {
 	
 	@Test
 	public void testDoGet_shouldCallServiceGetByIdMethod_whenAccountByIdRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/accounts/account");
+		when(request.getServletPath()).thenReturn("/accounts/account");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -97,7 +97,7 @@ class AccountControllerTest {
 	
 	@Test
 	public void testDoGet_shouldSetCorrectStatusAndHeaderToHttpResponse_whenAccountByIdRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/accounts/account");
+		when(request.getServletPath()).thenReturn("/accounts/account");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -108,7 +108,7 @@ class AccountControllerTest {
 	@Test
 	public void testDoGet_shouldWriteJsonRepsresentationOfRequestedAccountToHttpResponseBody_whenAccountByIdRequested() throws IOException, ServletException {
 		Account acc1 = new Account("first", "last", new GregorianCalendar(1994, Calendar.JANUARY, 22).getTime(), AccountStatus.REGULAR);
-		when(request.getRequestURI()).thenReturn("/servletsProject/accounts/account");
+		when(request.getServletPath()).thenReturn("/accounts/account");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(service.getAccountById(1)).thenReturn(acc1);
 		when(response.getWriter()).thenReturn(printWriter);
@@ -118,14 +118,14 @@ class AccountControllerTest {
 	
 	@Test
 	public void testDoGet_shouldThrowException_whenIdHeaderHasNotBeenSent() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/accounts/account");
+		when(request.getServletPath()).thenReturn("/accounts/account");
 		when(request.getHeader("Id")).thenReturn(null);
 		assertThrows(IllegalArgumentException.class, () -> controller.doGet(request, response));
 	}
 	
 	@Test
 	public void testDoGet_shouldThrowException_whenIdHeaderIsNotWholeNumber() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/accounts/account");
+		when(request.getServletPath()).thenReturn("/accounts/account");
 		when(request.getHeader("Id")).thenReturn("1.2");
 		assertThrows(IllegalArgumentException.class, () -> controller.doGet(request, response));
 	}

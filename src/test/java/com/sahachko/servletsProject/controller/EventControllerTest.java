@@ -57,7 +57,7 @@ class EventControllerTest {
 	
 	@Test
 	public void testDoGet_shouldCallServiceGetAll_whenAllEventsRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/events");
+		when(request.getServletPath()).thenReturn("/events");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
 		verify(service).getAllEvents();
@@ -65,7 +65,7 @@ class EventControllerTest {
 	
 	@Test
 	public void testDoGet_shouldSetCorrectStatusAndHeaderToHttpResponse_whenAllEventsRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/events");
+		when(request.getServletPath()).thenReturn("/events");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
 		verify(response).setStatus(200);
@@ -77,7 +77,7 @@ class EventControllerTest {
 		List<Event> events = new ArrayList<>();
 		Event event = new Event(1, "testFile.pdf", EventAction.UPLOADING);
 		events.add(event);
-		when(request.getRequestURI()).thenReturn("/servletsProject/events");
+		when(request.getServletPath()).thenReturn("/events");
 		when(service.getAllEvents()).thenReturn(events);
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -86,7 +86,7 @@ class EventControllerTest {
 	
 	@Test
 	public void testDoGet_shouldCallServiceGetByIdMethod_whenEventByIdRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/events/event");
+		when(request.getServletPath()).thenReturn("/events/event");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -95,7 +95,7 @@ class EventControllerTest {
 	
 	@Test
 	public void testDoGet_shouldSetCorrectStatusAndHeaderToHttpResponse_whenEventByIdRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/events/event");
+		when(request.getServletPath()).thenReturn("/events/event");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -107,7 +107,7 @@ class EventControllerTest {
 	public void testDoGet_shouldWriteJsonRepsresentationOfRequestedEventToHttpResponseBody_whenEventByIdRequested() throws IOException, ServletException {
 		Event event = new Event(1, "testFile.pdf", EventAction.UPLOADING);
 		event.setId(100);
-		when(request.getRequestURI()).thenReturn("/servletsProject/events/event");
+		when(request.getServletPath()).thenReturn("/events/event");
 		when(request.getHeader("Id")).thenReturn("100");
 		when(service.getEventById(100)).thenReturn(event);
 		when(response.getWriter()).thenReturn(printWriter);
@@ -117,14 +117,14 @@ class EventControllerTest {
 	
 	@Test
 	public void testDoGet_shouldThrowException_whenIdHeaderHasNotBeenSent() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/events/event");
+		when(request.getServletPath()).thenReturn("/events/event");
 		when(request.getHeader("Id")).thenReturn(null);
 		assertThrows(IllegalArgumentException.class, () -> controller.doGet(request, response));
 	}
 	
 	@Test
 	public void testDoGet_shouldThrowException_whenIdHeaderIsNotWholeNumber() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/events/event");
+		when(request.getServletPath()).thenReturn("/events/event");
 		when(request.getHeader("Id")).thenReturn("1.2");
 		assertThrows(IllegalArgumentException.class, () -> controller.doGet(request, response));
 	}

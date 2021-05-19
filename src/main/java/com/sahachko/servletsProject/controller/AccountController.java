@@ -29,8 +29,8 @@ public class AccountController extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String uri = request.getRequestURI();
-		if(uri.equals("/servletsProject/accounts")) {
+		String servletPath = request.getServletPath();
+		if(servletPath.equals("/accounts")) {
 			getAll(request, response);
 		} else {
 			getById(request, response);

@@ -32,8 +32,8 @@ public class UserController extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String uri = request.getRequestURI();
-		if(uri.equals("/servletsProject/users")) {
+		String servletPath = request.getServletPath();
+		if(servletPath.equals("/users")) {
 			getAll(request, response);
 		} else {
 			getById(request, response);

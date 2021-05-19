@@ -62,7 +62,7 @@ class UserControllerTest {
 	}
 	
 	public void testDoGet_shouldCallServiceGetAll_whenAllUsersRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/users");
+		when(request.getServletPath()).thenReturn("/users");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
 		verify(service).getAllUsers();
@@ -70,7 +70,7 @@ class UserControllerTest {
 	
 	@Test
 	public void testDoGet_shouldSetCorrectStatusAndHeaderToHttpResponse_whenAllUsersRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/users");
+		when(request.getServletPath()).thenReturn("/users");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
 		verify(response).setStatus(200);
@@ -87,7 +87,7 @@ class UserControllerTest {
 		user.setEvents(new ArrayList<Event>());
 		user.setFiles(new ArrayList<UserFile>());
 		users.add(user);
-		when(request.getRequestURI()).thenReturn("/servletsProject/users");
+		when(request.getServletPath()).thenReturn("/users");
 		when(service.getAllUsers()).thenReturn(users);
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -96,7 +96,7 @@ class UserControllerTest {
 	
 	@Test
 	public void testDoGet_shouldCallServiceGetByIdMethod_whenUserByIdRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/users/user");
+		when(request.getServletPath()).thenReturn("/users/user");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -105,7 +105,7 @@ class UserControllerTest {
 	
 	@Test
 	public void testDoGet_shouldSetCorrectStatusAndHeaderToHttpResponse_whenUserByIdRequested() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/users/user");
+		when(request.getServletPath()).thenReturn("/users/user");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doGet(request, response);
@@ -121,7 +121,7 @@ class UserControllerTest {
 		user.setAccount(account);
 		user.setEvents(new ArrayList<Event>());
 		user.setFiles(new ArrayList<UserFile>());
-		when(request.getRequestURI()).thenReturn("/servletsProject/users/user");
+		when(request.getServletPath()).thenReturn("/users/user");
 		when(request.getHeader("Id")).thenReturn("1");
 		when(service.getUserById(1)).thenReturn(user);
 		when(response.getWriter()).thenReturn(printWriter);
@@ -131,14 +131,14 @@ class UserControllerTest {
 	
 	@Test
 	public void testDoGet_shouldThrowException_whenIdHeaderHasNotBeenSent() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/users/user");
+		when(request.getServletPath()).thenReturn("/users/user");
 		when(request.getHeader("Id")).thenReturn(null);
 		assertThrows(IllegalArgumentException.class, () -> controller.doGet(request, response));
 	}
 	
 	@Test
 	public void testDoGet_shouldThrowException_whenIdHeaderIsNotWholeNumber() throws IOException, ServletException {
-		when(request.getRequestURI()).thenReturn("/servletsProject/users/user");
+		when(request.getServletPath()).thenReturn("/users/user");
 		when(request.getHeader("Id")).thenReturn("1.2");
 		assertThrows(IllegalArgumentException.class, () -> controller.doGet(request, response));
 	}

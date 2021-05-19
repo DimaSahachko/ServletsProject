@@ -30,8 +30,8 @@ public class UserFileController extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String uri = request.getRequestURI();
-		if(uri.equals("/servletsProject/files")) {
+		String servletPath = request.getServletPath();
+		if(servletPath.equals("/files")) {
 			getAll(request, response);
 		} else {
 			getById(request, response);
