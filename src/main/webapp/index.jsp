@@ -5,6 +5,6 @@
 <h2>/users ; /users/user</h2>
 <h2>/files ; /files/file</h2>
 <h2>/events ; /events/event</h2>
-<h2>uploads-history</h2>
+<h2>/uploads-history</h2>
 </body>
 </html>

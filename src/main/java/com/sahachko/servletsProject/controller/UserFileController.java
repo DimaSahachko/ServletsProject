@@ -3,7 +3,6 @@ package com.sahachko.servletsProject.controller;
 import java.io.BufferedReader;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -26,7 +25,7 @@ public class UserFileController extends HttpServlet {
 	
 	public UserFileController() {
 		this.json = new GsonBuilder().setDateFormat("yyyy-MM-dd 'at' HH:mm:ss").create();
-		this.userFileService = new UserFileServiceImplementation(new HibernateUserFileRepository(), new HibernateUserRepository(), new HibernateEventRepository(), new FilesIOServiceImplementation());
+		this.userFileService = new UserFileServiceImplementation(new HibernateUserFileRepository(), new HibernateUserRepository(), new HibernateEventRepository());
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -42,21 +41,13 @@ public class UserFileController extends HttpServlet {
 		String userIdHeader = request.getHeader("Id");
 		String fileName = request.getHeader("Filename");
 		if (fileName == null || userIdHeader == null) {
-			throw new IncorrectHeaderException("Required \"Filename\" or \"Id\" header wasn't sent along with request");
+			throw new IncorrectHeaderException("Required \"Filename\" or/and \"Id\" headers weren't sent along with request");
 		}
 		int userId = Integer.parseInt(userIdHeader);
 		UserFile file = new UserFile();
 		file.setUserId(userId);
-		int contentLength = request.getContentLength();
-		byte[] bytes = new byte[contentLength];
-		int currentPosition = 0;
-		int bytesRead = 0;
-		InputStream is = request.getInputStream();
-		while ((bytesRead = is.read()) != -1) {
-			bytes[currentPosition] = (byte) bytesRead;
-			currentPosition++;
-		}
-		file = userFileService.saveUserFile(file, bytes, fileName);
+		file.setName(fileName);
+		file = userFileService.saveUserFile(file);
 		response.setStatus(201);
 		response.setContentType("application/json");
 		response.getWriter().print(json.toJson(file));

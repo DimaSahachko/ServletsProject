@@ -84,11 +84,11 @@
 			<plugin>
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
-				<version>7.7.0</version>
+				<version>5.2.4</version>
 				<configuration>
-					<url>jdbc:mysql://localhost:3306/servlets</url>
-					<user>root</user>
-					<password>password</password>
+					<url>jdbc:mysql://eu-cdbr-west-01.cleardb.com/heroku_3a3eb5fb7cf2174</url>
+					<user>b8b7269ce23232</user>
+					<password>dd1bd162</password>
 					<locations>
 						<location>filesystem:src/main/resources/flyway</location>
 					</locations>

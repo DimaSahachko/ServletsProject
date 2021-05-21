@@ -15,32 +15,28 @@ import com.sahachko.servletsProject.model.UserFile;
 import com.sahachko.servletsProject.repository.EventRepository;
 import com.sahachko.servletsProject.repository.UserFileRepository;
 import com.sahachko.servletsProject.repository.UserRepository;
-import com.sahachko.servletsProject.service.FilesIOService;
 import com.sahachko.servletsProject.service.UserFileService;
 
 public class UserFileServiceImplementation implements UserFileService {
 	UserFileRepository userFileRepository;
 	UserRepository userRepository;
 	EventRepository eventRepository;
-	FilesIOService ioService;
 
 	public UserFileServiceImplementation(UserFileRepository userFileRepository, UserRepository userRepository,
-			EventRepository eventRepository, FilesIOService ioService) {
+			EventRepository eventRepository) {
 		this.userFileRepository = userFileRepository;
 		this.userRepository = userRepository;
 		this.eventRepository = eventRepository;
-		this.ioService = ioService;
 	}
 
 	@Override
-	public UserFile saveUserFile(UserFile file, byte[] bytes, String fileName) {
+	public UserFile saveUserFile(UserFile file) {
 		userRepository.getById(file.getUserId());
 		file.setStatus(FileStatus.ACTIVE);
 		UUID uuid = UUID.randomUUID();
-		String storedName = uuid + "__" + fileName;
+		String storedName = uuid + "__" + file.getName();
 		file.setName(storedName);
 		file = userFileRepository.save(file);
-		ioService.writeUserFile(bytes, file.getUserId(), storedName);
 		passInformationAboutOperationWithFileToUser(file, EventAction.UPLOADING);
 		return file;
 	}
@@ -78,7 +74,6 @@ public class UserFileServiceImplementation implements UserFileService {
 		UserFile file = getUserFileById(id);
 		file.setStatus(FileStatus.DELETED);
 		userFileRepository.update(file);
-		ioService.deleteUserFile(file.getUserId(), file.getName());
 		passInformationAboutOperationWithFileToUser(file, EventAction.DELETION);
 	}
 

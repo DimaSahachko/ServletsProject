@@ -6,7 +6,7 @@ import com.sahachko.servletsProject.model.UserFile;
 
 public interface UserFileService {
 	
-	UserFile saveUserFile(UserFile file, byte[] bytes, String fileName);
+	UserFile saveUserFile(UserFile file);
 	
 	UserFile updateUserFile(UserFile file);
 

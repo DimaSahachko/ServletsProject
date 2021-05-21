@@ -1,15 +1,12 @@
 package com.sahachko.servletsProject.controller;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -18,9 +15,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.servlet.ReadListener;
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -142,7 +137,7 @@ class UserFileControllerTest {
 		when(request.getHeader("Id")).thenReturn(null);
 		when(request.getHeader("Filename")).thenReturn("testFile.pdf");
 		Exception exception = assertThrows(IncorrectHeaderException.class, () -> controller.doPost(request, response));
-		assertEquals("Required \"Filename\" or \"Id\" header wasn't sent along with request", exception.getMessage());
+		assertEquals("Required \"Filename\" or/and \"Id\" headers weren't sent along with request", exception.getMessage());
 	}
 	
 	@Test
@@ -150,7 +145,7 @@ class UserFileControllerTest {
 		when(request.getHeader("Id")).thenReturn("1");
 		when(request.getHeader("Filename")).thenReturn(null);
 		Exception exception = assertThrows(IncorrectHeaderException.class, () -> controller.doPost(request, response));
-		assertEquals("Required \"Filename\" or \"Id\" header wasn't sent along with request", exception.getMessage());
+		assertEquals("Required \"Filename\" or/and \"Id\" headers weren't sent along with request", exception.getMessage());
 	}
 	
 	@Test
@@ -161,29 +156,22 @@ class UserFileControllerTest {
 	}
 	
 	@Test
-	public void testDoPost_shouldCallServiceSaveUserFileWithCorrectArguments() throws IOException, ServletException {
+	public void testDoPost_shouldCallServiceSaveUserFileWithCorrectArgument() throws IOException, ServletException {
 		when(request.getHeader("Id")).thenReturn("101");
 		when(request.getHeader("Filename")).thenReturn("testFile.pdf");
-		when(request.getContentLength()).thenReturn(3);
-		byte [] bytes = {1, 2, 3};
-		when(request.getInputStream()).thenReturn(getCustomInputStream());
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doPost(request, response);
 		ArgumentCaptor<UserFile> fileCaptor = ArgumentCaptor.forClass(UserFile.class);
-		ArgumentCaptor<byte[]> bytesCaptor = ArgumentCaptor.forClass(byte[].class);
-		verify(service).saveUserFile(fileCaptor.capture(), bytesCaptor.capture(), eq("testFile.pdf"));
+		verify(service).saveUserFile(fileCaptor.capture());
 		UserFile file = fileCaptor.getValue();
-		byte[] capturedBytes = bytesCaptor.getValue();
+		assertEquals("testFile.pdf", file.getName());
 		assertEquals(101, file.getUserId());
-		assertArrayEquals(bytes, capturedBytes);
 	}
 	
 	@Test
 	public void testDoPost_shouldSetCorrectStatusAndHeaderToHttpResponse() throws IOException, ServletException {
 		when(request.getHeader("Id")).thenReturn("101");
 		when(request.getHeader("Filename")).thenReturn("testFile.pdf");
-		when(request.getContentLength()).thenReturn(3);
-		when(request.getInputStream()).thenReturn(getCustomInputStream());
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doPost(request, response);
 		verify(response).setStatus(201);
@@ -197,9 +185,7 @@ class UserFileControllerTest {
 		file.setCreated(new GregorianCalendar(2021, 05, 11, 17, 53, 27).getTime());
 		when(request.getHeader("Id")).thenReturn("101");
 		when(request.getHeader("Filename")).thenReturn("testFile.pdf");
-		when(request.getContentLength()).thenReturn(3);
-		when(request.getInputStream()).thenReturn(getCustomInputStream());
-		when(service.saveUserFile(any(UserFile.class), any(byte[].class), eq("testFile.pdf"))).thenReturn(file);
+		when(service.saveUserFile(any(UserFile.class))).thenReturn(file);
 		when(response.getWriter()).thenReturn(printWriter);
 		controller.doPost(request, response);
 		assertEquals("{\"id\":1,\"name\":\"testFile.pdf\",\"userId\":101,\"created\":\"2021-06-11 at 17:53:27\",\"status\":\"ACTIVE\"}", stringWriter.toString());
@@ -293,27 +279,5 @@ class UserFileControllerTest {
 	public void testDoDelete_shouldThrowException_whenIdHeaderIsNotWholeNumber() throws IOException, ServletException {
 		when(request.getHeader("Id")).thenReturn("1.2");
 		assertThrows(IllegalArgumentException.class, () -> controller.doDelete(request, response));
-	}
-
-	ServletInputStream getCustomInputStream() {
-		byte [] bytes = {1, 2, 3};
-		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-		return new ServletInputStream() {
-			@Override
-			public int read() throws IOException {
-				return inputStream.read();
-			}
-			@Override
-			public boolean isFinished() {
-				return false;
-			}
-			@Override
-			public boolean isReady() {
-				return false;
-			}
-			@Override
-			public void setReadListener(ReadListener readListener) {
-			}
-		};
 	}
 }

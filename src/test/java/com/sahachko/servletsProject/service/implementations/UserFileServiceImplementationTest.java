@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.endsWith;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +22,6 @@ import com.sahachko.servletsProject.model.UserFile;
 import com.sahachko.servletsProject.repository.EventRepository;
 import com.sahachko.servletsProject.repository.UserFileRepository;
 import com.sahachko.servletsProject.repository.UserRepository;
-import com.sahachko.servletsProject.service.FilesIOService;
 
 @ExtendWith(MockitoExtension.class)
 class UserFileServiceImplementationTest {
@@ -37,9 +34,6 @@ class UserFileServiceImplementationTest {
 	
 	@Mock
 	private EventRepository eventRepository;
-	
-	@Mock
-	private FilesIOService ioService;
 	
 	@InjectMocks
 	private DummyUserFileServiceImplementation fileService;
@@ -112,36 +106,29 @@ class UserFileServiceImplementationTest {
 	public void testSaveUserFile_shouldCallUserRepositoryGetByIdAndSaveMethods() {
 		UserFile file = new UserFile();
 		file.setUserId(101);
+		file.setName("testFile.pdf");
 		when(fileRepository.save(file)).thenReturn(file);
-		fileService.saveUserFile(file, new byte[] {1,  2, 3}, "testFile.pdf");
+		fileService.saveUserFile(file);
 		verify(userRepository).getById(101);
 		verify(fileRepository).save(file);
-	}
-	
-	@Test
-	public void testSaveUserFile_shouldCallFilesIOServiceWriteUserFileMethod() {
-		UserFile file = new UserFile();
-		file.setUserId(101);
-		byte[] bytes = {1, 2, 3};
-		when(fileRepository.save(file)).thenReturn(file);
-		fileService.saveUserFile(file, bytes, "testFile.pdf");
-		verify(ioService).writeUserFile(eq(bytes), eq(101), endsWith("testFile.pdf"));
 	}
 	
 	@Test
 	public void testSaveUserFile_shouldReturnTheSameFileAsUserFileRepositoryReturns() {
 		UserFile file = new UserFile();
 		file.setUserId(101);
+		file.setName("testFile.pdf");
 		when(fileRepository.save(file)).thenReturn(file);
-		assertEquals(file, fileService.saveUserFile(file, new byte[] {1,  2, 3}, "testFile.pdf"));
+		assertEquals(file, fileService.saveUserFile(file));
 	}
 	
 	@Test
-	public void testSaveUserFile_shouldAssignFileObjectFields() {
+	public void testSaveUserFile_shouldAssignActiveFileStatus() {
 		UserFile file = new UserFile();
 		file.setUserId(101);
+		file.setName("testFile.pdf");
 		when(fileRepository.save(file)).thenReturn(file);
-		file = fileService.saveUserFile(file, new byte[] {1, 2, 3}, "testFile.pdf");
+		file = fileService.saveUserFile(file);
 		assertEquals(FileStatus.ACTIVE, file.getStatus());
 		assertTrue(file.getName().endsWith("testFile.pdf"));
 	}
@@ -151,7 +138,7 @@ class UserFileServiceImplementationTest {
 		UserFile file = new UserFile();
 		file.setUserId(101);
 		when(userRepository.getById(101)).thenThrow(new ResourceNotFoundException("There is no user with such id"));
-		Exception exception = assertThrows(ResourceNotFoundException.class, () -> fileService.saveUserFile(file, new byte[] {1,  2, 3}, "testFile.pdf"));
+		Exception exception = assertThrows(ResourceNotFoundException.class, () -> fileService.saveUserFile(file));
 		assertEquals("There is no user with such id", exception.getMessage());
 	}
 	
@@ -193,15 +180,6 @@ class UserFileServiceImplementationTest {
 	}
 	
 	@Test
-	public void testDeleteUserFileById_shouldCallFilesIOServiceDeleteUserFileMethod() {
-		UserFile file = new UserFile("testFile.pdf", 101, FileStatus.ACTIVE);
-		file.setId(1);
-		when(fileRepository.getById(1)).thenReturn(file);
-		fileService.deleteUserFileById(1);
-		verify(ioService).deleteUserFile(101, "testFile.pdf");
-	}
-	
-	@Test
 	public void testDeleteUserFile_shouldSetDeletedStatusToFile() {
 		UserFile file = new UserFile("testFile.pdf", 101, FileStatus.ACTIVE);
 		file.setId(1);
@@ -215,8 +193,8 @@ class UserFileServiceImplementationTest {
 	
 	private static class DummyUserFileServiceImplementation extends UserFileServiceImplementation {
 	
-		public DummyUserFileServiceImplementation (UserFileRepository userFileRepository, UserRepository userRepository, EventRepository eventRepository, FilesIOService ioService) {
-			super(userFileRepository,  userRepository, eventRepository,  ioService);
+		public DummyUserFileServiceImplementation (UserFileRepository userFileRepository, UserRepository userRepository, EventRepository eventRepository) {
+			super(userFileRepository,  userRepository, eventRepository);
 		}
 		
 		@Override

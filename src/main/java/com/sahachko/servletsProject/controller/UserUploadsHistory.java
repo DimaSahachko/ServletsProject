@@ -17,7 +17,6 @@ import com.sahachko.servletsProject.repository.hibernate.HibernateEventRepositor
 import com.sahachko.servletsProject.repository.hibernate.HibernateUserFileRepository;
 import com.sahachko.servletsProject.repository.hibernate.HibernateUserRepository;
 import com.sahachko.servletsProject.service.UserService;
-import com.sahachko.servletsProject.service.implementations.FilesIOServiceImplementation;
 import com.sahachko.servletsProject.service.implementations.UserFileServiceImplementation;
 import com.sahachko.servletsProject.service.implementations.UserServiceImplementation;
 
@@ -27,7 +26,7 @@ public class UserUploadsHistory extends HttpServlet {
 	private Gson json;
 	
 	public UserUploadsHistory() {
-		this.service = new UserServiceImplementation(new HibernateUserRepository(), new UserFileServiceImplementation(new HibernateUserFileRepository(),  new HibernateUserRepository(), new HibernateEventRepository(), new FilesIOServiceImplementation()));
+		this.service = new UserServiceImplementation(new HibernateUserRepository(), new UserFileServiceImplementation(new HibernateUserFileRepository(),  new HibernateUserRepository(), new HibernateEventRepository()));
 		this.json = new GsonBuilder().setDateFormat("yyyy-MM-dd 'at' HH:mm:ss").create();
 	}
 
